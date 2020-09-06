@@ -27,6 +27,7 @@ XPeria 8|	Sony|	455487|	$900
 4. Go to tab Insert and click 'Table' button
 5. Confirm range of your table and make sure checkbox 'My table has headers' is selected
 6. Save workbook with name ws_Book_**YourSurname**
+7. Close browser tab with your workbook
 
 ### Create your first PowerApp
 
@@ -74,7 +75,7 @@ Now Gallery displays the list of devices from our Excel, but as you might notice
 3. Now lest add one more control into line template in order to display device's price
 4. Select first row of the Gallery and on Insert tab click Label
 5. Adjust label size and place it in right corner
-6. Set the Text property to the follow value: 
+6. Set the Text property of the Label to the following value: 
 > Text(ThisItem.UnitPrice, "[$-en-US]$#.00")
 7. The final result should look like this:
 
@@ -100,15 +101,17 @@ For users usually inconvinient to type device code manully, lets provide them po
 2. Modify Default property of MS_SearchInput with follow value:
 > barcodeValue
 3. Add Media->Barcode Scanner control to the form and name it MS_BarcodeScanner
-4. Modify OnScan property of MSBarcodeScanner control and set follow value:
+4. Modify OnScan property of MS_BarcodeScanner control and set follow value:
 > UpdateContext({barcodeValue: MS_BarcodeScanner.Value})
 
-Now we have 3 controls bound to each other: when barcode is scanned it's value through variable goes to Search input. When Search input is modified - Gallery automatically filters own content based on input.
+Now we have 3 controls bound to each other: when barcode is scanned it's value through variable goes to Search input. When Search input is modified - Gallery automatically filters own content based on input. The final screen shpul look like this:
+
+![ss2](https://content.screencast.com/users/Jack8647/folders/Capture/media/ff89bcd8-7ee0-421a-bdf4-ee7c4dfae038/LWR_Recording.png)
 
 ### First test
 
 Now we have display functionality implemented - lets test how it works on mobile device. 
-> Barcode scanner can be tested in browser
+> Barcode scanner can't be tested in browser!
 
 1. Save your app and click Publish button.
 > When you save app changes are visible to you only, when you publish - all users recevie a new version
@@ -120,3 +123,48 @@ Now we have display functionality implemented - lets test how it works on mobile
 
 ![qr1](https://barcode.tec-it.com/barcode.ashx?data=115223&code=QRCode&multiplebarcodes=false&translate-esc=false&unit=Fit&dpi=96&imagetype=Gif&rotation=0&color=%23000000&bgcolor=%23ffffff&codepage=&qunit=Mm&quiet=0&eclevel=L)
 
+### Implement Create/Update item functionality
+
+Excellent we have a screen where our data is shown. Now it's time to modify this data, lets implement a possibility to create a new item and edit an existing one.
+1. Add new screen and name it EditItemScreen
+2. Insert Forms->Edit control to the form and name it EIS_EditForm
+3. Set DataSource property of EIS_EditForm to Table1
+4. Click on Fields property and add all avaliable columns to the list as shown below:
+
+![ss3](https://content.screencast.com/users/Jack8647/folders/Capture/media/a65ccfa2-c7b5-4dc0-aead-b16a38a6b371/LWR_Recording.png)
+
+5. Set Item property of EIS_EditForm to: 
+> selectedItem
+6. Add two buttons to the screen and name it EIS_SaveButton and EIS_CancelButton. 
+7. Modify buttons' display text accordinly.
+8. Modify OnSelect property of EIS_CancelButton with following value:
+> Back()
+9. Modify OnSelect property of EIS_SaveButton with next code:
+> SubmitForm(EIS_EditForm); Select(EIS_CancelButton);
+
+Our edit screen is ready, it's time to connect it with main screen.
+> Note: we used buttons like a functions. Cancel button just return user to previous screen, and Save button submits a form and then call Cancel button. By this way you can avoid code duplication.
+
+1. Return to MainScreen and select DeviceGallery control
+2. Find property OnSelect and insert follow code:
+> Navigate(EditItemScreen, ScreenTransition.Cover, { selectedItem: ThisItem })
+3. Add new button to the MainScreen and name it MS_CreateButton
+4. Set following code to property OnSelect of MS_CreateButton:
+> Navigate(EditItemScreen, ScreenTransition.Cover, { selectedItem: Defaults(Table1) })
+
+That's it. Our edit form is connect to main screen and ready for use. Make a couple of tests - add new device and edit an exisitng one.
+
+![ss4](https://content.screencast.com/users/Jack8647/folders/Capture/media/0d0f6dcf-7463-4ca1-93e3-a7e52ff07127/LWR_Recording.png)
+
+### Introduce adaptive layout
+
+As you might noticed, our app has fixed size on your phone and doesn't cover whole screen. Lets fix it and make more adaptive.
+
+1. Go to File->Settings->Screen Size + orientation
+2. Set Scale to Fit option to Off and click Apply
+3. Save and Publish your app. Install a new version on your phone and see a difference in layout.
+
+As you see there are much more free spaces now, but controls are not aligned and app looks ugly. Lets fix it by tuning our controls to fit any screen.
+
+1. Go to File->Settings->Settings
+2. Search for Container Control feature and enable it
