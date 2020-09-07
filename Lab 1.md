@@ -3,7 +3,7 @@
 1. Visit Power Platform Admin Center at https://admin.powerplatform.microsoft.com/
 2. Create new environment with follow parameters:
 - Name = [Dev] Workshop **YourSurname**
-- Type = Sandbox
+- Type = Trial
 - Region = Europe
 - Create database = Yes
 - Language = English
